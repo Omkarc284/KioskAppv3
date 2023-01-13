@@ -2,14 +2,15 @@
   "expo": {
     "name": "KioskApp",
     "slug": "KioskApp",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon2.png",
     "userInterfaceStyle": "light",
+    "jsEngine": "hermes",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/splash1.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2459A4"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,8 +23,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/icon2.png",
+        "backgroundColor": "#2459A4"
       },
       "package": "com.omkarc284.KioskApp"
     },
