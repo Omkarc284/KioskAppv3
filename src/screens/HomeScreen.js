@@ -3,13 +3,14 @@ import { Text, StyleSheet, View, TouchableOpacity, ScrollView, Dimensions} from 
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import { Context as AuthContext } from "../context/AuthContext";
-
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const {height, width} = Dimensions.get('window');
 const HomeScreen = (props) => {
+  const [spinner, setSpinner] = useState(false);
   const {logout} = useContext(AuthContext);
   const tempkeeper = props.navigation.state.params.data.keeper
-  const tempkiosk = props.navigation.state.params.data.kiosk
+  const tempkiosk = props.navigation.state.params.kiosk
   const [keeper, setKeeper] = useState({
     username: tempkeeper.username,
     token: props.navigation.state.params.data.token
@@ -35,6 +36,12 @@ const HomeScreen = (props) => {
   return (
     <>
       <ScrollView contentContainerStyle={styles.container}>
+        <Spinner
+          visible={spinner}
+          textContent={'Loading...'}
+          overlayColor='rgba(0, 0, 0, 0.75)'
+          textStyle={styles.spinnerTextStyle}
+        />
         <View style={{ flex: 1}}>
           <View style={{ flexDirection: 'row', marginBottom: 18, alignContent:'space-around'}}>
             <View style={{flex: 0.8}}>
@@ -43,7 +50,10 @@ const HomeScreen = (props) => {
             </View>
             <TouchableOpacity 
               style={styles.logoutButton} 
-              onPress={logout}
+              onPress={async ()=>{
+                setSpinner(true)
+                await logout();
+              }}
             >
               <Text style={{fontSize: 18, color: '#fff', fontWeight:'bold'}}>Logout</Text>
             </TouchableOpacity>
@@ -193,7 +203,10 @@ const styles = StyleSheet.create({
     flex: 0.9,
     borderRadius: 20,
     elevation: 15
-  }
+  },
+  spinnerTextStyle: {
+    color: '#fff'
+  },
 });
 
 export default HomeScreen;

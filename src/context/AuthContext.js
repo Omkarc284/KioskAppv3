@@ -19,35 +19,43 @@ const authReducer = (state, action) => {
     }
 }
 
+
+
 const clearErrorMessage = dispatch => () => {
     dispatch({type: 'clear_error_message'})
 }
 
 const tryLocalLogin = dispatch => async () => {
+    var k = await AsyncStorage.getItem('kiosk');
+    const kiosk = JSON.parse(k);
     const token = await AsyncStorage.getItem('token');
     const data = await AsyncStorage.getItem('data');
     if(token && data ) {
         dispatch({ type: 'login', payload: token});
         navigate('Home', {
-            data: JSON.parse(data)
+            data: JSON.parse(data),
+            kiosk: kiosk
         })
     }else {
-        navigate('Login');
+        navigate('Welcome');
     }
 }
 
 const login = (dispatch) => async ({username, password}) => {
     try {
-        const response = await loginApi.post('/login', {username, password});
-        console.log(response.data);
+        var k = await AsyncStorage.getItem('kiosk');
+        const kiosk = JSON.parse(k);
+        const response = await loginApi.post('/login', {username, password, kiosk});
         await AsyncStorage.setItem('token', response.data.token)
         await AsyncStorage.setItem('tokenExpiration', response.data.expiresIn.toString());
         await AsyncStorage.setItem('data', JSON.stringify(response.data))
         dispatch({type: 'login', payload: response.data.token})
         navigate('Home',{
-            data: response.data
+            data: response.data,
+            kiosk: kiosk
         })
     } catch (err) {
+        console.log('Login Error:', err)
         dispatch({type: 'add_error', payload: 'Something went wrong!'})
     }
 }
@@ -55,30 +63,42 @@ const login = (dispatch) => async ({username, password}) => {
 
 const logout = (dispatch) => async () => {
     try{
+        var k = await AsyncStorage.getItem('kiosk');
+        const kiosk = JSON.parse(k);
         const token = await AsyncStorage.getItem('token')
-        const response = await logoutApi(token).post('/logout')
+        const response = await logoutApi(token).post('/logout', {
+            kiosk: kiosk
+        });
+        // console.log(response)
         if(response.status === 200) {
             await AsyncStorage.removeItem('token');
             await AsyncStorage.removeItem('data');
             await AsyncStorage.removeItem('tokenExpiration');
+            await AsyncStorage.removeItem('kiosk');
             dispatch({type: 'signout'})
-            navigate('Login')
+            navigate('Welcome')
         }else{
+            console.log("Something is wrong")
             return
         }
     } catch (err) {
-        
+        console.log("Error logout:", err)
     }
 }
 const logout0 = async () => {
     try{
+        var k = await AsyncStorage.getItem('kiosk');
+        const kiosk = JSON.parse(k);
         const token = await AsyncStorage.getItem('token')
-        const response = await logoutApi(token).post('/logout')
+        const response = await logoutApi(token).post('/logout', {
+            kiosk: kiosk
+        })
         if(response.status === 200) {
             await AsyncStorage.removeItem('token');
             await AsyncStorage.removeItem('data');
             await AsyncStorage.removeItem('tokenExpiration');
-            navigate('Login')
+            await AsyncStorage.removeItem('kiosk');
+            navigate('Welcome')
         }else{
             return
         }

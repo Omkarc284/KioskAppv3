@@ -1,8 +1,8 @@
 import axios from 'axios';
-
+import url from '../utils/url';
 const kioskApi = (token) => 
     axios.create({
-        baseURL: 'http://68.183.89.222:3000/inventory',
+        baseURL: 'http://'+url+'/inventory',
         headers: {
             Authorization: `Bearer ` + token
         }

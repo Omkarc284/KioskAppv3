@@ -1,8 +1,8 @@
 import axios from 'axios';
-
+import url from '../utils/url';
 const ConfirmSale = (token) => 
     axios.create({
-        baseURL: 'http://68.183.89.222:3000/sales',
+        baseURL: 'http://'+url+'/sales',
         headers: {
             Authorization: `Bearer ` + token
         }

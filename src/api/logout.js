@@ -1,8 +1,8 @@
 import axios from 'axios';
-
+import url from '../utils/url';
 const logout = (token) => 
     axios.create({
-        baseURL: 'http://68.183.89.222:3000/keeperauth',
+        baseURL: 'http://'+url+'/keeperauth',
         headers: {
             Authorization: `Bearer ` + token
         }

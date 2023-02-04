@@ -1,8 +1,8 @@
 import axios from 'axios';
-
+import url from '../utils/url';
 const ReviewPost = (token) => 
     axios.create({
-        baseURL: 'http://68.183.89.222:3000/ratings',
+        baseURL: 'http://'+url+'/ratings',
         headers: {
             Authorization: `Bearer ` + token
         }

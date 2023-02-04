@@ -4,14 +4,15 @@ import { TextInput } from "react-native-paper";
 import { NavigationEvents } from "react-navigation";
 import { TouchableOpacity } from "react-native";
 import { Context as AuthContext } from "../context/AuthContext";
-
-const { height, width } = Dimensions.get('window');
+import Spinner from "react-native-loading-spinner-overlay";
 
 const LoginScreen = props => {
     const { state, login, clearErrorMessage } = useContext(AuthContext)
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('')
     const [isPasswordSecure, setIsPasswordSecure] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(null)
+    const [spinner, setSpinner] = useState(false);
 
     // const loginApi = async () => {
     //     const response = await login.post('/login', {
@@ -31,6 +32,12 @@ const LoginScreen = props => {
 
     return(
         <View style={{flex: 1}}>
+            <Spinner
+                visible={spinner}
+                textContent={'Loading...'}
+                overlayColor='rgba(0, 0, 0, 0.75)'
+                textStyle={styles.spinnerTextStyle}
+            />
             <NavigationEvents onWillBlur={clearErrorMessage} />
             <View style={{flex: 1}}>
                 <View style={styles.pictureView}>
@@ -69,7 +76,10 @@ const LoginScreen = props => {
                         />
                         <TouchableOpacity 
                             style={styles.loginButton}
-                            onPress={async () => await login({username, password})}
+                            onPress={async () => {
+                                // setSpinner(true);
+                                await login({username, password})
+                            }}
                         >
                             <Text style={{ color: '#fff',fontSize: 20, fontWeight:'bold' }}>Login</Text>
                         </TouchableOpacity>
@@ -86,6 +96,7 @@ const LoginScreen = props => {
 };
 
 const styles = StyleSheet.create({
+    
     welcomeStyle: {
         fontSize: 36,
         color: '#1182AE',

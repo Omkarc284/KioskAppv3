@@ -1,8 +1,8 @@
 import axios from 'axios';
-
+import url from '../utils/url';
 const upidetails = (token) => 
     axios.create({
-        baseURL: 'http://68.183.89.222:3000/upi',
+        baseURL: 'http://'+url+'/upi',
         headers: {
             Authorization: `Bearer ` + token
         }
