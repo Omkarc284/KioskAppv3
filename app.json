@@ -2,7 +2,7 @@
   "expo": {
     "name": "KioskApp",
     "slug": "KioskApp",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon2.png",
     "userInterfaceStyle": "light",
@@ -26,6 +26,12 @@
         "foregroundImage": "./assets/icon2.png",
         "backgroundColor": "#2459A4"
       },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCxGyjp6oOxyRMzYRAkfxfZmSrAzzVcXeg"
+        }
+      },
+      "softwareKeyboardLayoutMode":"pan",
       "package": "com.omkarc284.KioskApp"
     },
     "web": {
