@@ -40,7 +40,7 @@ const MyMap = props => {
   const setTarget = async () => {
     
     console.log("before location fetch")
-    let location = await Location.getCurrentPositionAsync();
+    //let location = await Location.getCurrentPositionAsync();
     let response1;
     setLocation(location);
     console.log("before kiosk fetch: ",location)
@@ -62,6 +62,7 @@ const MyMap = props => {
     })
     .catch(error => {
       console.log("Error: ", error)
+      setErrorMessage(error);
       return 0
     });;
     // await locationApi().post('/check', {
