@@ -14,15 +14,17 @@ const MyMap = props => {
   // const TASK_NAME = 'check-location-task';
   const [spinner, setSpinner] = useState(false);
   const [location, setLocation] = useState(loc);
+  const [latitude, setLatitude] = useState(Number(0.0))
+  const [longitude, setLongitude] = useState(Number(0.0))
   const [errorMessage, setErrorMessage] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
   // const [shouldMapLoad, setShouldMapLoad] = useState(false)
-  const [targetLocation, setTargetLocation] = useState({
-    latitude: 0,
-    longitude: 0,
-    radius: 100
+  // const [targetLocation, setTargetLocation] = useState({
+  //   latitude: 0,
+  //   longitude: 0,
+  //   radius: 100
 
-  })
+  // })
   const onLoginPressed = async () => {
     setSpinner(true)
     const targetlocation = await setTarget();
@@ -40,47 +42,26 @@ const MyMap = props => {
   const setTarget = async () => {
     
     console.log("before location fetch")
-    //let location = await Location.getCurrentPositionAsync();
-    let response1;
-    setLocation(location);
+    // let location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Highest, maximumAge: 100});
+    
+    // setLocation(location);
     console.log("before kiosk fetch: ",location)
-    await fetch('http://192.168.0.106:3000/location/check', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "latitude": location.coords.latitude,
-        "longitude": location.coords.longitude,
-        "radius": 100
-      }),
-    }).then(response => response.json())
-    .then(json => {
-      console.log(json)
-      response1 = json
+    const response = await locationApi().post('/check', {
+      "latitude": latitude,
+      "longitude": longitude,
+      "radius": 100
     })
-    .catch(error => {
-      console.log("Error: ", error)
-      setErrorMessage(error);
-      return 0
-    });;
-    // await locationApi().post('/check', {
-    //   "latitude": location.coords.latitude,
-    //   "longitude": location.coords.longitude,
-    //   "radius": 100
-    // }).then((response1) => {
-    //   response = response1
-    // })
     console.log("after kiosk fetch")
-    if(response1.length === 0){
+    if(response.data.length === 0){
       return 0
     }
-    console.log(response1)
-    const data = response1[0]
-    await AsyncStorage.setItem('kiosk', JSON.stringify(response1[0]))
-    setTargetLocation({latitude: data.location.coordinates[1], longitude: data.location.coordinates[0], radius: data.radius})
+    console.log(response.data)
+    const data = response.data[0]
+    await AsyncStorage.setItem('kiosk', JSON.stringify(data))
+    
     return {latitude: data.location.coordinates[1], longitude: data.location.coordinates[0], radius: data.radius}
+    
+    
   }
   // const onRefresh = React.useCallback(() => {
   //   setRefreshing(true);
@@ -150,6 +131,13 @@ const MyMap = props => {
           coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
           provider={PROVIDER_GOOGLE}
           showsUserLocation={true}
+          loadingEnabled={true}
+          loadingIndicatorColor='#000F4D'
+          onUserLocationChange={val => {
+            //console.log(val.nativeEvent.coordinate);
+            setLatitude(val.nativeEvent.coordinate.latitude)
+            setLongitude(val.nativeEvent.coordinate.longitude)
+          }}
           style={{ flex: 1, zIndex: -1}}
           initialRegion={{
             latitude: location.coords.latitude,
@@ -182,6 +170,9 @@ const MyMap = props => {
       
     );
   }
+  
+    
+  
   
 }
 const styles = StyleSheet.create({
