@@ -12,6 +12,7 @@ const {height, width} = Dimensions.get("window");
 const MyMap = props => {
   const loc = null;
   // const TASK_NAME = 'check-location-task';
+  const [result, setResult] = useState([])
   const [spinner, setSpinner] = useState(false);
   const [location, setLocation] = useState(loc);
   const [latitude, setLatitude] = useState(Number(0.0))
@@ -34,6 +35,12 @@ const MyMap = props => {
     }
     else {
       props.navigation.navigate('Login')
+    }
+  }
+  const getkiosks = async() => {
+    const response = await locationApi().get('/all');
+    if(response.status === 200 ||201){
+      setResult(response.data)
     }
   }
   const onAdminLogin = async () => {
@@ -85,6 +92,7 @@ const MyMap = props => {
     
     (async () => {
       // setShouldMapLoad(false)
+      getkiosks();
       await AsyncStorage.clear();
       console.log('Async cleared');
       let {status} = await Location.requestForegroundPermissionsAsync();
@@ -101,7 +109,7 @@ const MyMap = props => {
       console.log(location)
       setLocation(location);
     })();
-
+    
   }, []);
 
   while (errorMessage) {
@@ -146,11 +154,29 @@ const MyMap = props => {
             longitudeDelta: 0.005,
           }}
         >
-        <Marker
-          coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
-          title="You are here!"
-          description={`Your location: ${location.coords.latitude}, ${location.coords.longitude}`}
-        />
+        {
+          (result.length > 0) ? 
+          
+          result.map((item, index) => {
+            // console.log(item.name ,' : ', item.operational)
+            var lat = item.location.coordinates[1];
+            var long = item.location.coordinates[0];
+            return(
+              <Marker
+                pinColor={(item.operational === false) ? 'navy': 'red'}
+                key={item._id}
+                coordinate={{latitude: lat, longitude: long}}
+                title={item.name}
+                description={(item.operational === false) ? 'Inactive': 'Active'}
+              />
+            )
+          })
+          
+          :
+
+          <View></View>
+        }
+        
         
         </MapView>
         <Callout style={styles.loginsection}>
