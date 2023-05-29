@@ -72,7 +72,7 @@ const LoginScreen = props => {
                                     <Text style={styles.errorMessage}>{state.errorMessage}</Text>
                                 </View> : <View><Text style={styles.errorMessage}> </Text></View>
                             }
-                            <View style={{marginTop: 24, alignItems:'center', justifyContent:'center'}} >
+                            <View style={{paddingTop:24, alignItems:'center', justifyContent:'center'}} >
                                 <TextInput style={styles.textinput} underlineColor="transparent" placeholderTextColor={'#626262'} placeholder="Username" onChangeText={(value)=>setUsername(value)}/>
                                 <TextInput 
                                     style={styles.textinput} 
@@ -91,26 +91,22 @@ const LoginScreen = props => {
                                     onChangeText={(value)=>setPassword(value)}
                                     
                                 />
+                                <View style={{paddingVertical:24}}>
+                                    <TouchableOpacity 
+                                        style={styles.loginButton}
+                                        onPress={async () => {
+                                            setSpinner(true);
+                                            await Alogin({username, password})
+                                            // props.navigation.navigate('HomeAdmin')
+                                        }}
+                                    >
+                                        <Text style={{ color: '#fff',fontSize: 20, fontWeight:'bold' }}>Login</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </View>
-                        <View style={{justifyContent: 'flex-end', marginBottom: height*0.036}}>
-                            <TouchableOpacity 
-                                style={styles.loginButton}
-                                onPress={async () => {
-                                    setSpinner(true);
-                                    await Alogin({username, password})
-                                    // props.navigation.navigate('HomeAdmin')
-                                }}
-                            >
-                                <Text style={{ color: '#fff',fontSize: 20, fontWeight:'bold' }}>Login</Text>
-                            </TouchableOpacity>
-
-                        </View>
-                        
-                    </View>
-                    
-                </View>
-                
+                        </View>  
+                    </View>  
+                </View>    
             </View>
         </>
         
@@ -172,6 +168,9 @@ const styles = StyleSheet.create({
         color: 'red',
         fontWeight: '700',
         textAlign:'center'
+    },
+    spinnerTextStyle:{
+        color: 'white'
     }
 });
 

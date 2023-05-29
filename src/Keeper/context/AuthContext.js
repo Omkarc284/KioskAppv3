@@ -57,12 +57,18 @@ const Alogin = (dispatch) => async ({username, password}) => {
         
         const response = await adminloginApi.post('/login', {username, password});
         console.log("after response")
-        await AsyncStorage.setItem('AdminToken', response.data.token)
-        console.log("after Async storage")
-        dispatch({type: 'admin_login', payload: response.data.token})
-        navigate('HomeAdmin',{
-            token: response.data.token
-        })
+        if(response.status === 200){
+            await AsyncStorage.setItem('Mode', 'Admin')
+            await AsyncStorage.setItem('AdminToken', response.data.token)
+            console.log("after Async storage")
+            dispatch({type: 'admin_login', payload: response.data.token})
+            navigate('HomeAdmin',{
+                token: response.data.token
+            })
+        }else{
+            console.log('Admin Login Error:', err)
+            dispatch({type: 'add_error', payload: 'Something went wrong!'})
+        }
     } catch (err) {
         console.log('Admin Login Error:', err)
         dispatch({type: 'add_error', payload: 'Something went wrong!'})
@@ -77,15 +83,22 @@ const login = (dispatch) => async ({username, password}) => {
         console.log("before response")
         const response = await loginApi.post('/login', {username, password, kiosk});
         console.log("after response")
-        await AsyncStorage.setItem('token', response.data.token)
-        await AsyncStorage.setItem('tokenExpiration', response.data.expiresIn.toString());
-        await AsyncStorage.setItem('data', JSON.stringify(response.data))
-        console.log("after Async storage")
-        dispatch({type: 'login', payload: response.data.token})
-        navigate('Home',{
-            data: response.data,
-            kiosk: kiosk
-        })
+        if(response.status === 200){
+            await AsyncStorage.setItem('Mode', 'Keeper')
+            await AsyncStorage.setItem('token', response.data.token)
+            await AsyncStorage.setItem('tokenExpiration', response.data.expiresIn.toString());
+            await AsyncStorage.setItem('data', JSON.stringify(response.data))
+            console.log("after Async storage")
+            dispatch({type: 'login', payload: response.data.token})
+            navigate('Home',{
+                data: response.data,
+                kiosk: kiosk
+            })
+        }else{
+            console.log('Login Error:', err)
+            dispatch({type: 'add_error', payload: 'Something went wrong!'})
+        }
+
     } catch (err) {
         console.log('Login Error:', err)
         dispatch({type: 'add_error', payload: 'Something went wrong!'})
@@ -110,11 +123,11 @@ const logout = (dispatch) => async () => {
             dispatch({type: 'signout'})
             navigate('Welcome')
         }else{
-            console.log("Something is wrong")
-            return
+            navigate('Welcome')
         }
     } catch (err) {
         console.log("Error logout:", err)
+        navigate('Welcome')
     }
 }
 const logout0 = async () => {
@@ -133,29 +146,34 @@ const logout0 = async () => {
                 await AsyncStorage.removeItem('kiosk');
                 navigate('Welcome')
             }else{
-                return
+                navigate('Welcome')
             }
         }
     } catch (err) {
-        
+        navigate('Welcome')
     }
 }
 const adminlogout = (dispatch) => async () => {
     try{
         
         const token = await AsyncStorage.getItem('AdminToken')
-        const response = await adminlogoutApi(token).post('/logout');
-        // console.log(response)
-        if(response.status === 200) {
-            await AsyncStorage.removeItem('Admintoken');
-            dispatch({type: 'admin_logout'})
-            navigate('Welcome')
-        }else{
-            console.log("Something is wrong")
-            return
+        if(token){
+            const response = await adminlogoutApi(token).post('/logout');
+            // console.log(response)
+            if(response.status === 200) {
+                await AsyncStorage.removeItem('Admintoken');
+                dispatch({type: 'admin_logout'})
+                navigate('Welcome')
+            }else{
+                console.log("Something is wrong")
+                navigate('Welcome')
+                return
+            }
         }
+        
     } catch (err) {
         console.log("Error logout:", err)
+        navigate('Welcome')
     }
 }
 
@@ -166,8 +184,11 @@ const checkTokenExpiration = async () => {
         const expTime = new Date(expirationTime).getTime() ;
         const now = new Date().getTime()
       if (expirationTime && (now > expTime)) {
+        const mode = await AsyncStorage.getItem('Mode')
+        if(mode === 'Keeper'){
+            logout0();
+        }
         // Token has expired, so log the user out
-        logout0();
       }
     } catch (error) {
       console.log(error);

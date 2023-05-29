@@ -136,7 +136,7 @@ const AddKiosk = props => {
         }
     }
     React.useEffect(() => {
-    
+        setSpinner(true);
         (async () => {
           // setShouldMapLoad(false)
           let {status} = await Location.requestForegroundPermissionsAsync();
@@ -150,12 +150,12 @@ const AddKiosk = props => {
             // console.log(location)
             setLocation(location);
           location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Highest, maximumAge: 100});
-          
-          setLocation(location);
           setLatitude(location.coords.latitude)
           setLongitude(location.coords.longitude)
+          setLocation(location);
         })();
         getProductData();
+        setSpinner(false);
       }, []);
     return (
         <>
@@ -323,14 +323,15 @@ const AddKiosk = props => {
                         >
                             <Callout style={styles.note}>
                                 <View>
-                                    <Text>Long Press to set the marker. Zoom in for best accuracy</Text>
+                                    <Text>Long Press to set the marker.</Text>
+                                    <Text>Zoom in for best accuracy.</Text>
                                 </View>
                             </Callout>
                             <MapView
-                                coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
+                                coordinate={{ latitude: latitude, longitude: longitude }}
                                 provider={PROVIDER_GOOGLE}
                                 loadingEnabled
-                                showsUserLocation={false}
+                                showsUserLocation={true}
                                 style={{ flex: 1, zIndex: -1, borderRadius: 18}}
                                 initialRegion={{
                                     latitude: location.coords.latitude,
@@ -338,13 +339,13 @@ const AddKiosk = props => {
                                     latitudeDelta: 0.005,
                                     longitudeDelta: 0.005,
                                 }}
-                                onMapLoaded={() => { setLatitude(location.coords.latitude);  setLongitude(location.coords.longitude)}}
+                            
                                 onLongPress={(e) => { setLatitude(e.nativeEvent.coordinate.latitude); setLongitude(e.nativeEvent.coordinate.longitude)}}
                             >
                                 <Marker
                                     draggable
                                     onDragEnd={(e) => { setLatitude(e.nativeEvent.coordinate.latitude); setLongitude(e.nativeEvent.coordinate.longitude)}}
-                                    coordinate={{ latitude: location.coords.latitude, longitude:  location.coords.longitude }}
+                                    coordinate={{ latitude: latitude, longitude:  longitude }}
                                     title="Kiosk Location"
                                     description={`Kiosk Location: ${latitude}, ${longitude}`}
                                 />
@@ -395,8 +396,8 @@ const AddKiosk = props => {
                             </View>
                             <View>
                                 <Text style={{fontWeight:'bold'}}>Location:</Text>
-                                <TextInput label={"Latitude*"} defaultValue={location.coords.latitude.toString()}  keyboardType='number-pad' onChangeText={(value)=>{setLatitude(parseFloat(value))}}/>
-                                <TextInput label={"Longitude*"} defaultValue={location.coords.longitude.toString()}  keyboardType='number-pad' onChangeText={(value) => {setLongitude(parseFloat(value))}}/>
+                                <TextInput label={"Latitude*"} defaultValue={location.coords.latitude.toString()} value={latitude}  keyboardType='number-pad' onChangeText={(value)=>{setLatitude(parseFloat(value))}}/>
+                                <TextInput label={"Longitude*"} defaultValue={location.coords.longitude.toString()} value={longitude} keyboardType='number-pad' onChangeText={(value) => {setLongitude(parseFloat(value))}}/>
                                 
                                 <TouchableOpacity style={{ alignSelf: 'flex-end'}} onPress={() => setMapModal(true)}>
                                     <Text style={{color:colors.iconblue}}>Select using Map</Text>
