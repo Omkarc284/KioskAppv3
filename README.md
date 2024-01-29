@@ -1,3 +1,5 @@
+This apk is specific to a client and cannot be found on any App Store
+
 ### First Screen
 ![WhatsApp Image 2024-01-29 at 05 12 15](https://github.com/Omkarc284/KioskAppv3/assets/77777642/53b9b0f1-1b32-422f-9604-e06e59d08cfa)
 
